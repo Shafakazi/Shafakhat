@@ -1,0 +1,17 @@
+import requests, bs4, os
+folder = input("Enter foldername to create:")
+os.mkdir(folder)
+url = "http://xkcd.com/5/"
+i = 1
+while not url.endswith("/1/"):
+    res = requests.get(url)
+    text = bs4.BeautifulSoup(res.content)
+    imgfile = text.find("meta", property="og:image")
+    res = requests.get(imgfile['content'])
+    fh = open(os.getcwd() + "\\" + folder + "\\" + str(i) + ".jpg", "wb")
+    for chunk in res.iter_content(1000):
+        fh.write(chunk)
+    fh.close()
+    i = i + 1
+    prevlink = text.select('a[rel="prev"]')[0]
+    url = "http://xkcd.com" + prevlink.get('href')
